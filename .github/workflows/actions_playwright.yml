@@ -1,0 +1,109 @@
+# .github/workflows/actions_playwright.yml
+
+name: Playwright Tests with Allure Report
+
+# Условия запуска автоматизированного тестирования
+on:
+  # Запускать при новом коммите в указанные ветки
+  push:
+    branches: [ main, master, develop ]
+  # Запускать при создании pull request в указанные ветки
+  pull_request:
+    branches: [ main, master, develop ]
+
+# Определение задач (jobs), которые будут выполняться
+jobs:
+  test:
+    name: Запуск Playwright тестов
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Шаг 1: Клонирование репозитория
+        uses: actions/checkout@v4
+        # actions/checkout - официальное действие GitHub для загрузки кода из репозитория
+
+      - name: Шаг 2: Установка Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Шаг 3: Установка зависимостей проекта
+        run: |
+          # Обновление pip до последней версии
+          python -m pip install --upgrade pip
+          # Установка требуемых пакетов для тестов
+          pip install pytest pytest-playwright allure-pytest
+          # Установка остальных зависимостей проекта
+          pip install -r requirements.txt  
+        # run: Выполнение команд в оболочке Linux
+
+      - name: Шаг 4: Установка браузеров Playwright
+        run: |
+          # Установка Chromium и его системных зависимостей
+          # Для headed режима нужен полный браузер, а не только драйвер
+          playwright install --with-deps chromium
+          # Можно установить другие браузеры: firefox, webkit
+
+      - name: Шаг 5: Запуск тестов Playwright
+        run: |
+          # Запуск тестов с параметрами:
+          # --headed - браузер в графическом режиме (нужен xvfb в Linux)
+          # --slowmo 500 - замедление выполнения на 500мс между действиями
+          # -s - отключение захвата вывода (позволяет видеть print в консоли)
+          # -v - подробный (verbose) режим вывода
+          # --alluredir - директория для сохранения результатов Allure
+          xvfb-run pytest --headed --slowmo 500 -s -v \
+            --alluredir=allure-results
+          # xvfb-run: запуск в виртуальном дисплее X11 (требуется для headed в Linux без GUI)
+        env:
+          # Переменные окружения для тестов
+          # PYTHONUNBUFFERED=1: отключение буферизации вывода для мгновенного логирования
+          PYTHONUNBUFFERED: 1
+
+      - name: Шаг 6: Сохранение результатов Allure как артефакт
+        uses: actions/upload-artifact@v3
+        # Выполнить шаг даже если тесты упали (always)
+        if: always()
+        with:
+          # Имя артефакта (будет видно в GitHub)
+          name: allure-results
+          # Путь к директории с результатами Allure
+          path: allure-results/
+          # Время хранения артефакта (деньги экономия места)
+          retention-days: 30
+
+      - name: Шаг 7: Генерация HTML-отчета Allure из результатов
+        uses: simple-elf/allure-report-action@v1.9
+        # Выполнить всегда, чтобы получить отчет даже при падении тестов
+        if: always()
+        # ID шага для использования в следующих шагах
+        id: allure-report
+        with:
+          # Путь к результатам тестов (из шага 6)
+          allure_results: allure-results
+          # Ветка для хранения истории отчетов
+          gh_pages: gh-pages
+          # Директория для сгенерированного отчета
+          allure_report: allure-report
+          # Версия Allure (проверяйте актуальность)
+          allure_version: 2.23.1
+
+      - name: Шаг 8: Сохранение сгенерированного отчета как артефакт
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: allure-report
+          path: allure-report/
+          retention-days: 30
+
+      - name: Шаг 9: Публикация отчета на GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        if: always()
+        with:
+          # Токен для доступа к репозиторию (автоматически предоставляется GitHub)
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # Ветка для публикации отчетов
+          publish_branch: gh-pages
+          # Директория с отчетом для публикации
+          publish_dir: allure-report

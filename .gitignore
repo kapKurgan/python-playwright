@@ -1,0 +1,21 @@
+# pycharm
+.idea
+.pytest_cache
+__init__.py
+
+# python
+venv
+.venv
+__pycache__
+
+# locust
+dumps
+locust_*.csv
+locust_*.json
+report.html
+
+# Mac OS
+.DS_Store
+
+my_work
+.my_step.txt

@@ -1,17 +1,13 @@
 name: UI Tests
 
 on:
-  workflow_dispatch:
-    inputs:
-      SCENARIO:
-        type: choice
-        default: 'test_allure'
-        options:
-          - 'test_allure'
-          - 'test_product_page'
-          - 'test_main_page'
-        required: true
-        description: 'Выберите набор тестов'
+  # Запускать при новом коммите в указанные ветки
+  push:
+    branches: [ main, master, develop ]
+  # Запускать при создании pull request в указанные ветки
+  pull_request:
+    branches: [ main, master, develop ]
+
 
 jobs:
   run-tests:
@@ -44,7 +40,7 @@ jobs:
 
       - name: Запуск тестов
         run: |
-          pytest --headed --slowmo 500 -s -v --alluredir=reports/${{ github.run_id }}/allure-results
+          xvfb-run pytest --headed --slowmo 500 -s -v --alluredir=reports/${{ github.run_id }}/allure-results
       - name: Установка Allure CLI
         if: always()
         run: |

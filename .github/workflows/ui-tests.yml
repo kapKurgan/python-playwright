@@ -31,18 +31,11 @@ jobs:
       - name: Установка зависимостей
         run: |
           python -m pip install --upgrade pip
+          pip install pytest pytest-playwright allure-pytest
           pip install -r requirements.txt
 
-      - name: Установка Firefox
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y firefox
-
-      - name: Установка geckodriver
-        run: |
-          wget https://github.com/mozilla/geckodriver/releases/download/v0.34.0/geckodriver-v0.34.0-linux64.tar.gz
-          sudo tar -xzf geckodriver-*.tar.gz -C /usr/local/bin/
-          sudo chmod +x /usr/local/bin/geckodriver
+      - name: Шаг 5 - Установка браузеров Playwright
+        run: playwright install --with-deps chromium
 
       - name: Создание директорий
         run: |
@@ -51,8 +44,7 @@ jobs:
 
       - name: Запуск тестов
         run: |
-          pytest -v -s --tb=line --language=en --alluredir=reports/${{ github.run_id }}/allure-results --browser=firefox ${{ github.event.inputs.SCENARIO }}.py
-
+          pytest --headed --slowmo 500 -s -v --alluredir=reports/${{ github.run_id }}/allure-results
       - name: Установка Allure CLI
         if: always()
         run: |

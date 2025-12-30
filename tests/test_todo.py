@@ -38,7 +38,7 @@ def test_registration(page, input_value: str) -> None:
     print("error_count =",error_count)
     if error_count > 0:
         for i in range(error_count):
-            print("--->>> Ошибка --->>>", PageLogin(page).registration_email_error.nth(i).text_content())
+            print("--->>> Ошибка --->>>", PageLogin(page).registration_error.nth(i).text_content())
     else:
         print(page.url)
 

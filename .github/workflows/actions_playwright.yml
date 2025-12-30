@@ -1,81 +1,79 @@
 # .github/workflows/actions_playwright.yml
 
-# Название workflow, которое будет отображаться в GitHub Actions
 name: Playwright Tests with Allure Report
 
-# Условия запуска автоматизированного тестирования
+# РЈСЃР»РѕРІРёСЏ Р·Р°РїСѓСЃРєР° Р°РІС‚РѕРјР°С‚РёР·РёСЂРѕРІР°РЅРЅРѕРіРѕ С‚РµСЃС‚РёСЂРѕРІР°РЅРёСЏ
 on:
-  # Запускать при новом коммите в указанные ветки
+  # Р—Р°РїСѓСЃРєР°С‚СЊ РїСЂРё РЅРѕРІРѕРј РєРѕРјРјРёС‚Рµ РІ СѓРєР°Р·Р°РЅРЅС‹Рµ РІРµС‚РєРё
   push:
     branches: [ main, master, develop ]
-  # Запускать при создании pull request в указанные ветки
+  # Р—Р°РїСѓСЃРєР°С‚СЊ РїСЂРё СЃРѕР·РґР°РЅРёРё pull request РІ СѓРєР°Р·Р°РЅРЅС‹Рµ РІРµС‚РєРё
   pull_request:
     branches: [ main, master, develop ]
 
-# Определение задач, которые будут выполняться
+# РћРїСЂРµРґРµР»РµРЅРёРµ Р·Р°РґР°С‡, РєРѕС‚РѕСЂС‹Рµ Р±СѓРґСѓС‚ РІС‹РїРѕР»РЅСЏС‚СЊСЃСЏ
 jobs:
   test:
-    name: Запуск Playwright тестов
+    name: Р—Р°РїСѓСЃРє Playwright С‚РµСЃС‚РѕРІ
     runs-on: ubuntu-latest
-    
+
     steps:
-      - name: Шаг 1 - Клонирование репозитория
+      - name: РЁР°Рі 1 - РљР»РѕРЅРёСЂРѕРІР°РЅРёРµ СЂРµРїРѕР·РёС‚РѕСЂРёСЏ
         uses: actions/checkout@v4
 
-      - name: Шаг 2 - Настройка окружения
+      - name: РЁР°Рі 2 - РќР°СЃС‚СЂРѕР№РєР° РѕРєСЂСѓР¶РµРЅРёСЏ
         run: |
-          # Создаем уникальные директории для результатов и отчетов
-          # github.run_id - уникальный ID каждого запуска workflow
+          # РЎРѕР·РґР°РµРј СѓРЅРёРєР°Р»СЊРЅС‹Рµ РґРёСЂРµРєС‚РѕСЂРёРё РґР»СЏ СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ Рё РѕС‚С‡РµС‚РѕРІ
+          # github.run_id - СѓРЅРёРєР°Р»СЊРЅС‹Р№ ID РєР°Р¶РґРѕРіРѕ Р·Р°РїСѓСЃРєР° workflow
           echo "ALLURE_RESULTS_DIR=reports/${{ github.run_id }}/allure-results" >> $GITHUB_ENV
           echo "ALLURE_REPORT_DIR=reports/${{ github.run_id }}/allure-report" >> $GITHUB_ENV
-          # Создаем директории заранее
+          # РЎРѕР·РґР°РµРј РґРёСЂРµРєС‚РѕСЂРёРё Р·Р°СЂР°РЅРµРµ
           mkdir -p reports/${{ github.run_id }}/allure-results
 
-      - name: Шаг 3 - Установка Python
+      - name: РЁР°Рі 3 - РЈСЃС‚Р°РЅРѕРІРєР° Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.12'
           cache: 'pip'
 
-      - name: Шаг 4 - Установка зависимостей проекта
+      - name: РЁР°Рі 4 - РЈСЃС‚Р°РЅРѕРІРєР° Р·Р°РІРёСЃРёРјРѕСЃС‚РµР№ РїСЂРѕРµРєС‚Р°
         run: |
           python -m pip install --upgrade pip
           pip install pytest pytest-playwright allure-pytest
           pip install -r requirements.txt
 
-      - name: Шаг 5 - Установка браузеров Playwright
+      - name: РЁР°Рі 5 - РЈСЃС‚Р°РЅРѕРІРєР° Р±СЂР°СѓР·РµСЂРѕРІ Playwright
         run: playwright install --with-deps chromium
 
-      - name: Шаг 6 - Запуск тестов с уникальной директорией
+      - name: РЁР°Рі 6 - Р—Р°РїСѓСЃРє С‚РµСЃС‚РѕРІ СЃ СѓРЅРёРєР°Р»СЊРЅРѕР№ РґРёСЂРµРєС‚РѕСЂРёРµР№
         run: |
-          # Все результаты сохраняются в уникальную папку по ID запуска
           xvfb-run pytest --headed --slowmo 500 -s -v \
             --alluredir=${{ env.ALLURE_RESULTS_DIR }}
         env:
           PYTHONUNBUFFERED: 1
 
-      - name: Шаг 7 - Сохранение результатов как артефакт
+      - name: РЁР°Рі 7 - РЎРѕС…СЂР°РЅРµРЅРёРµ СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ РєР°Рє Р°СЂС‚РµС„Р°РєС‚
         uses: actions/upload-artifact@v3
         if: always()
         with:
-          # Уникальное имя артефакта с ID запуска
+          # РЈРЅРёРєР°Р»СЊРЅРѕРµ РёРјСЏ Р°СЂС‚РµС„Р°РєС‚Р° СЃ ID Р·Р°РїСѓСЃРєР°
           name: allure-results-${{ github.run_id }}
-          # Путь к уникальной директории с результатами
+          # РџСѓС‚СЊ Рє СѓРЅРёРєР°Р»СЊРЅРѕР№ РґРёСЂРµРєС‚РѕСЂРёРё СЃ СЂРµР·СѓР»СЊС‚Р°С‚Р°РјРё
           path: ${{ env.ALLURE_RESULTS_DIR }}
           retention-days: 30
 
-      - name: Шаг 8 - Генерация Allure отчета
+      - name: РЁР°Рі 8 - Р“РµРЅРµСЂР°С†РёСЏ Allure РѕС‚С‡РµС‚Р°
         uses: simple-elf/allure-report-action@v1.9
         if: always()
         with:
-          # Указываем уникальную директорию с результатами
+          # РЈРєР°Р·С‹РІР°РµРј СѓРЅРёРєР°Р»СЊРЅСѓСЋ РґРёСЂРµРєС‚РѕСЂРёСЋ СЃ СЂРµР·СѓР»СЊС‚Р°С‚Р°РјРё
           allure_results: ${{ env.ALLURE_RESULTS_DIR }}
           gh_pages: gh-pages
-          # Указываем уникальную директорию для отчета
+          # РЈРєР°Р·С‹РІР°РµРј СѓРЅРёРєР°Р»СЊРЅСѓСЋ РґРёСЂРµРєС‚РѕСЂРёСЋ РґР»СЏ РѕС‚С‡РµС‚Р°
           allure_report: ${{ env.ALLURE_REPORT_DIR }}
           allure_version: 2.23.1
 
-      - name: Шаг 9 - Сохранение готового отчета как артефакт
+      - name: РЁР°Рі 9 - РЎРѕС…СЂР°РЅРµРЅРёРµ РіРѕС‚РѕРІРѕРіРѕ РѕС‚С‡РµС‚Р° РєР°Рє Р°СЂС‚РµС„Р°РєС‚
         uses: actions/upload-artifact@v3
         if: always()
         with:
@@ -83,20 +81,19 @@ jobs:
           path: ${{ env.ALLURE_REPORT_DIR }}
           retention-days: 30
 
-      - name: Шаг 10 - Публикация отчета на GitHub Pages
+      - name: РЁР°Рі 10 - РџСѓР±Р»РёРєР°С†РёСЏ РѕС‚С‡РµС‚Р° РЅР° GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         if: always()
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
-          # Публикуем в уникальную поддиректорию на gh-pages
-          # Это позволяет хранить историю всех запусков
+          # РџСѓР±Р»РёРєСѓРµРј РІ СѓРЅРёРєР°Р»СЊРЅСѓСЋ РїРѕРґРґРёСЂРµРєС‚РѕСЂРёСЋ РЅР° gh-pages
+          # Р­С‚Рѕ РїРѕР·РІРѕР»СЏРµС‚ С…СЂР°РЅРёС‚СЊ РёСЃС‚РѕСЂРёСЋ РІСЃРµС… Р·Р°РїСѓСЃРєРѕРІ
           destination_dir: ${{ github.run_id }}
           publish_dir: ${{ env.ALLURE_REPORT_DIR }}
 
-      - name: Шаг 11 - Вывод ссылки на отчет
+      - name: РЁР°Рі 11 - Р’С‹РІРѕРґ СЃСЃС‹Р»РєРё РЅР° РѕС‚С‡РµС‚
         if: always()
         run: |
-          echo "? Allure отчет доступен по ссылке:"
-          echo "?? https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${{ github.run_id }}/"
-
+          echo "вњ… Allure РѕС‚С‡РµС‚ РґРѕСЃС‚СѓРїРµРЅ РїРѕ СЃСЃС‹Р»РєРµ:"
+          echo "рџ”— https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${{ github.run_id }}/"

@@ -1,0 +1,6 @@
+INFO     root:test_todo.py:28 🧪 Начало теста: выбор языка
+INFO     root:test_todo.py:33 📍 Открыта страница: http://selenium1py.pythonanywhere.com/
+INFO     root:test_todo.py:40 🌐 Выбран язык: ru
+INFO     root:test_todo.py:44 🔘 Кнопка языка нажата
+INFO     root:test_todo.py:49 ✅ URL совпадает: http://selenium1py.pythonanywhere.com/ru/
+INFO     root:test_todo.py:20 📸 Скриншот сохранён: Страница после смены языка

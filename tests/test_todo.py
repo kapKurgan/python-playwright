@@ -1,4 +1,8 @@
 # pytest --headed
+# pytest --alluredir=reports/allure-results
+# pytest -s -v --html=reports/pytest_report.html
+#
+
 import pytest
 from pages.locators import PageLogin, PageHome, BASE_URL
 from utils.data_for_tests import read_test_data_json

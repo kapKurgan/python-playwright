@@ -40,7 +40,7 @@ jobs:
 
       - name: Запуск тестов
         run: |
-          xvfb-run pytest --headed --slowmo 500 -s -v --alluredir=reports/${{ github.run_id }}/allure-results
+          xvfb-run pytest --headed --slowmo 500 -s -v --alluredir=reports/${{ github.run_id }}/allure-results --capture=tee-sys --html=reports/${{ github.run_id }}/pytest_report.html
       - name: Установка Allure CLI
         if: always()
         run: |

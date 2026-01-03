@@ -1,25 +1,54 @@
 # pytest --headed
 # pytest --alluredir=reports/allure-results
 # pytest -s -v --html=reports/pytest_report.html
-#
-
+# pytest test_todo.py -v --html=reports/pytest_report.html --capture=tee-sys --self-contained-html
+import allure
 import pytest
+from playwright.sync_api import Page
+import logging
+import sys
+
 from pages.locators import PageLogin, PageHome, BASE_URL
 from utils.data_for_tests import read_test_data_json
 
 data_language = read_test_data_json("data_tests/data_language.json")
 
+def attach_screenshot(page: Page, name: str = "Скриншот"):
+    """Прикрепляет скриншот страницы к Allure-отчету и логирует"""
+    screenshot = page.screenshot()
+    allure.attach(screenshot, name=name, attachment_type=allure.attachment_type.PNG)
+    logging.info(f"📸 Скриншот сохранён: {name}")
+
+@allure.feature("Локализация")
+@allure.story("Выбор языка")
+@allure.title("Успешный выбор языка")
 @pytest.mark.parametrize("input_value", data_language)
-def test_language(page, input_value: str) -> None:
+def test_language(page, input_value: str, caplog) -> None:
+    caplog.set_level(logging.INFO)
+    logging.info("🧪 Начало теста: выбор языка")
+
     # Зайти на главную страницу
-    PageHome(page).navigate()
+    with allure.step(f"Открыть URL: {BASE_URL}"):
+        PageHome(page).navigate()
+        logging.info(f"📍 Открыта страница: {BASE_URL}")
+
     print(BASE_URL+input_value[0]+"/")
+
     # Выбрать язык
-    PageHome(page).language(input_value)
-    PageHome(page).language_button.click()
-    # assert page.url == BASE_URL+input_value[0]+"/" f"Ошибка выбора языка {input_value[0]}"
-    assert page.url == BASE_URL+input_value[0]+"/", f"Ошибка выбора языка: {input_value[0]}"
+    with allure.step(f"Выбрать язык: {input_value[0]}"):
+        PageHome(page).language(input_value)
+        logging.info(f"🌐 Выбран язык: {input_value[0]}")
+
+    with allure.step("Нажать кнопку подтверждения языка"):
+        PageHome(page).language_button.click()
+        logging.info("🔘 Кнопка языка нажата")
+
+    with allure.step("Проверить URL после смены языка"):
+        expected_url = BASE_URL + input_value[0] + "/"
+        assert page.url == expected_url, f"Ошибка выбора языка: {input_value[0]}"
+        logging.info(f"✅ URL совпадает: {page.url}")
     print(page.url)
+    attach_screenshot(page, "Страница после смены языка")
 
 
 

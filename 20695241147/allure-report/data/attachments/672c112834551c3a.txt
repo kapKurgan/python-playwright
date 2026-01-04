@@ -1,0 +1,4 @@
+http://selenium1py.pythonanywhere.com/en-gb/
+error_count = 2
+--->>> Ошибка --->>>  A user with that email address already exists
+--->>> Ошибка --->>>  The two password fields didn't match.

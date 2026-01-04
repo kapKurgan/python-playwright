@@ -1,7 +1,7 @@
 [
-  ["en-gb"],
-  ["de"],
-  ["fr"],
-  ["it"],
-  ["ru"]
+  ["en-gb", "Go"],
+  ["de", "Ausführen"],
+  ["fr", "Envoyer"],
+  ["it", "Vai"],
+  ["ru", "Выполнить"]
 ]

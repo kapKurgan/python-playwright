@@ -25,7 +25,7 @@ def attach_screenshot(page: Page, name: str = "Скриншот"):
 @allure.title("Успешный выбор языка")
 @pytest.mark.parametrize("input_value", data_language)
 def test_language(page, input_value: str) -> None:
-    print("🧪 Начало теста: выбор языка")
+    print("\n🧪 Начало теста: выбор языка")
 
     # Зайти на главную страницу
     with allure.step(f"Открыть URL: {BASE_URL}"):
@@ -45,6 +45,10 @@ def test_language(page, input_value: str) -> None:
         expected_url = BASE_URL + input_value[0] + "/"
         assert page.url == expected_url, f"Ошибка выбора языка: {input_value[0]}"
         print(f"✅ URL совпадает: {page.url}")
+
+    with allure.step("Проверить название кнопки на соответствие выбранному языку"):
+        assert input_value[1] == PageHome(page).language_button.text_content(), f"Ошибка название кнопки {input_value[1]} на соответствие выбранному языку: {input_value[0]}"
+        print("🔘 Название кнопки соответствует выбранному языку")
 
     attach_screenshot(page, "Страница после смены языка")
 

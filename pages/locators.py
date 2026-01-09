@@ -25,6 +25,7 @@ class PageLogin:
         self.registration_password_2 = page.locator('#id_registration-password2')
         self.registration_button = page.locator('#register_form > button')
         self.registration_error = page.locator('#register_form > div.form-group.has-error > div > span')
+        self.registration_error_alert = page.locator('#register_form > div.alert.alert-danger')
 
 
         self.login_email = page.locator("#id_login-username")

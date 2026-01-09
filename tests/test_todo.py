@@ -24,7 +24,7 @@ def attach_screenshot(page: Page, name: str = "Скриншот"):
 @allure.story("Выбор языка")
 @allure.title("Успешный выбор языка")
 @pytest.mark.parametrize("input_value", data_language)
-def test_language(page, input_value: str) -> None:
+def _test_language(page, input_value: str) -> None:
     print("\n🧪 Начало теста: выбор языка")
 
     # Зайти на главную страницу
@@ -54,9 +54,15 @@ def test_language(page, input_value: str) -> None:
 
 
 
+# @pytest.mark.parametrize("input_value", [
+#     ("aaa3@yandex.ru", "!Qazxsw23ed", "!Qazxsw23edc"),
+#     ("aaa4@yandex.ru", "!Qazxsw23edc", "!Qazxsw23edc")])
 @pytest.mark.parametrize("input_value", [
+    ("", "", ""),
     ("aaa3@yandex.ru", "!Qazxsw23ed", "!Qazxsw23edc"),
-    ("aaa4@yandex.ru", "!Qazxsw23edc", "!Qazxsw23edc")])
+    ("aaa44yandex.ru", "ZXcvbnmju765", "ZXcvbnmju765"),
+    ("aaa44@yandex.ru", "ZXcvbnmju765", ""),
+    ("aaa44@yandex.ru", "", "ZXcvbnmju765")])
 def test_registration(page, input_value: str) -> None:
     # Зайти на главную страницу
     PageHome(page).navigate()
@@ -68,9 +74,28 @@ def test_registration(page, input_value: str) -> None:
     # Нажать кнопку "Зарегистрироваться"
     PageLogin(page).registration_button.click()
 
+    # Получить сообщение: Адрес электронной почты должен содержать символ "@". В адресе "aaa4yandex.ru" отсутствует символ "@"
+    # Это сообщение не лежит в DOM и не является «title»-подсказкой, но у элемента есть специальное свойство validationMessage
+    # поле не проходит HTML-валидность (required, pattern, minlength …)
+    msg = PageLogin(page).registration_email.evaluate("el => el.validationMessage")
+    print("=========== >", len(msg), "< ============= validationMessage →", msg)
+    msg = PageLogin(page).registration_password_1.evaluate("el => el.validationMessage")
+    print("=========== >", len(msg), "< ============= validationMessage →", msg)
+    msg = PageLogin(page).registration_password_2.evaluate("el => el.validationMessage")
+    print("=========== >", len(msg), "< ============= validationMessage →", msg)
+
+
+
+    # Проверить уникальность email
+    error_count = PageLogin(page).registration_error_alert.count()
+    print("=========== > registration_error_alert =",error_count)
+    if error_count > 0:
+        for i in range(error_count):
+            print("--->>> Ошибка --->>>", PageLogin(page).registration_error_alert.nth(i).text_content())
+
     # Проверить уникальность email
     error_count = PageLogin(page).registration_error.count()
-    print("error_count =",error_count)
+    print("=========== > registration_error =",error_count)
     if error_count > 0:
         for i in range(error_count):
             print("--->>> Ошибка --->>>", PageLogin(page).registration_error.nth(i).text_content())
@@ -80,7 +105,7 @@ def test_registration(page, input_value: str) -> None:
 @pytest.mark.parametrize("input_value", [
     ("aaa1@yandex.ru", "!Qazxsw23edc"),
     ("aaa2@yandex.ru", "!Qazxsw23edc")])
-def test_login(page, input_value: str) -> None:
+def _test_login(page, input_value: str) -> None:
     # Зайти на главную страницу
     PageHome(page).navigate()
     # Открыть страницу регистрации

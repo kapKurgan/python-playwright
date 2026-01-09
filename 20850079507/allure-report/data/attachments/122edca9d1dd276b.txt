@@ -1,0 +1,11 @@
+http://selenium1py.pythonanywhere.com/en-gb/
+=========== > 0 < ============= validationMessage → 
+=========== > 27 < ============= validationMessage → Please fill out this field.
+=========== > 27 < ============= validationMessage → Please fill out this field.
+=========== > registration_error_alert = 1
+--->>> Ошибка --->>> 
+        Oops! We found some errors - please check the error messages below and try again
+    
+=========== > registration_error = 2
+--->>> Ошибка --->>>  A user with that email address already exists
+--->>> Ошибка --->>>  The two password fields didn't match.

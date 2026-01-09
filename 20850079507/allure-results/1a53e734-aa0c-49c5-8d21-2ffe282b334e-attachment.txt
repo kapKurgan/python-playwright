@@ -1,0 +1,7 @@
+http://selenium1py.pythonanywhere.com/en-gb/
+=========== > 79 < ============= validationMessage → Please include an '@' in the email address. 'aaa44yandex.ru' is missing an '@'.
+=========== > 0 < ============= validationMessage → 
+=========== > 0 < ============= validationMessage → 
+=========== > registration_error_alert = 0
+=========== > registration_error = 0
+http://selenium1py.pythonanywhere.com/en-gb/accounts/login/

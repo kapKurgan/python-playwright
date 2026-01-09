@@ -1,0 +1,7 @@
+http://selenium1py.pythonanywhere.com/en-gb/
+=========== > 0 < ============= validationMessage → 
+=========== > 0 < ============= validationMessage → 
+=========== > 27 < ============= validationMessage → Please fill out this field.
+=========== > registration_error_alert = 0
+=========== > registration_error = 0
+http://selenium1py.pythonanywhere.com/en-gb/accounts/login/

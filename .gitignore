@@ -8,10 +8,11 @@ venv
 .venv
 __pycache__
 
-# locust
+# reports
 allure-results
 assets
 pytest_report.html
+pytest.log
 
 # Mac OS
 .DS_Store
@@ -19,3 +20,4 @@ pytest_report.html
 my_work
 .my_step.txt
 passwords
+screenshot

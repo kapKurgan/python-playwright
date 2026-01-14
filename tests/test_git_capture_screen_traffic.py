@@ -1,3 +1,6 @@
+# pytest -m include_slow
+
+
 import allure
 import pytest
 from datetime import datetime
@@ -22,6 +25,10 @@ def browser_context_args(browser_context_args):
 
 @allure.feature("GitHub")
 @allure.story("Уникальные пользователи")
+@pytest.mark.skipif("'include_slow' not in config.option.markexpr",
+    reason="пропущено по умолчанию, запускается с -m include_slow"
+)
+@pytest.mark.include_slow
 @pytest.mark.parametrize("input_value", [
     ("testing-using-selenium-and-python"),
     ("Python_API"),
